@@ -22,7 +22,7 @@ Changelog = "https://github.com/sjin09/poatools/releases"
 python = "^3.6.1"
 click = "^7.0"
 argparse = "^1.4.0"
-pyabpoa = "^1.2.5"
+pyfastx = "^0.8.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.2"
