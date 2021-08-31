@@ -23,6 +23,7 @@ python = "^3.6.1"
 click = "^7.0"
 argparse = "^1.4.0"
 pyfastx = "^0.8.4"
+Cython = "^0.29.24"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.2"
