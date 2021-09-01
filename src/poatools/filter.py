@@ -29,6 +29,7 @@ def poa_filter(infile, outfile):
                 if len(arr) != 0:
                     subread_count += 1
                     subread = line.split()[1]
+                    print(cell, zmw, jdx)
                     subread_base = subread[jdx]
                     base_count[subread_base] += 1
         subread_ref_count = base_count[ref] 
