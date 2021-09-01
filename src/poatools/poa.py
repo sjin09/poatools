@@ -127,9 +127,11 @@ def qsub_split(qsub):
     qpos = int(qpos) - 1
     return zmw, qpos, alt, ref
 
-def get_subset_poa_pdf(cell, zmw, x, ccs_msa_chunk_lst, subread_msa_chunk_lst):
 
-    subset_pdf_file = "./{}/poa/{}.subset.pdf".format(cell, zmw)
+def get_subset_poa_pdf(cell, qsub, x, ccs_msa_chunk_lst, subread_msa_chunk_lst):
+
+    zmw, qpos, alt, ref = qsub_split(qsub)
+    subset_pdf_file = "./{}/poa/{}_{}_{}_{}.pdf".format(cell, zmw, qpos, alt, ref)
     subset_fasta_file = subset_pdf_file.replace(".pdf", ".fasta")
 
     fa = open(subset_fasta_file, "w")
@@ -191,7 +193,6 @@ def get_poa(cell, zmw, ccs_file, subread_file, qsub, mlen, poa_file, poa_subset_
         ccs_base_end = msa_pos2ccs_pos[ccs_msa_end]
 
         if qpos >= ccs_base_start and qpos <= ccs_base_end:
-
             ccs_msa_base_pos = (x * mlen)
             ccs_msa_chunk = ccs_msa_chunk_lst[x]
             for p, ccs_msa_base in enumerate(ccs_msa_chunk):
@@ -202,7 +203,7 @@ def get_poa(cell, zmw, ccs_file, subread_file, qsub, mlen, poa_file, poa_subset_
                         break
                 ccs_msa_base_pos += 1
             qsub_watermark = list(" " * mlen)
-            qsub_watermark[qsub_watermark_index-1:qsub_watermark_index+2] = ["<","*", ">"]
+            qsub_watermark[qsub_watermark_index-1:qsub_watermark_index+2] = ["<","*",">"]
             qsub_watermark = "".join(qsub_watermark)
 
             msa_chunk_lst = []
@@ -214,9 +215,8 @@ def get_poa(cell, zmw, ccs_file, subread_file, qsub, mlen, poa_file, poa_subset_
             poa.write("{}\n".format("\n".join(msa_chunk_lst + [""])))
             poa_subset.write("{}".format("\n".join(msa_chunk_lst + [""])))
             poa_subset.close()
-
             if pdf_state:
-                get_subset_poa_pdf(cell, zmw, x, ccs_msa_chunk_lst, subread_msa_chunk_lst)
+                get_subset_poa_pdf(cell, qsub, x, ccs_msa_chunk_lst, subread_msa_chunk_lst)
         else:
             msa_chunk_lst = []
             msa_chunk_lst.append("{:<15s}\t{}".format("bq:", ccs_msa_bq_chunk)) 
