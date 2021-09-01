@@ -14,7 +14,7 @@ def poa_filter(infile, outfile):
         poa_file = "{}/poa/{}.subset.poa".format(cell, zmw)
         if not os.path.exists(poa_file):
             print("{}\t{}\t{} partial order alignment file does not exist".format(cell, zmw, poa_file))
-
+            continue
 
         subread_count = 0
         base_count = {base: 0 for base in dna}
