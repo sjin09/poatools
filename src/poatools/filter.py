@@ -13,7 +13,8 @@ def poa_filter(infile, outfile):
         tname, tpos, ref, alt, _, cell, zmw, qsub = line.split()
         poa_file = "{}/poa/{}.subset.poa".format(cell, zmw)
         if not os.path.exists(poa_file):
-            sys.exit("partial order alignment file does not exist")
+            print("{}\t{} partial order alignment file does not exist".format(zmw, poa_file))
+
 
         subread_count = 0
         base_count = {base: 0 for base in dna}
