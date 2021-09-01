@@ -29,7 +29,7 @@ def poa_filter(infile, outfile):
                 if len(arr) != 0:
                     subread_count += 1
                     subread = line.split()[1]
-                    if not jdx in subread:
+                    if jdx == 100:
                         continue
                     subread_base = subread[jdx]
                     base_count[subread_base] += 1
