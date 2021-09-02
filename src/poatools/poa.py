@@ -148,14 +148,14 @@ def get_subset_poa_pdf(cell, qsub, x, ccs_msa_chunk_lst, subread_msa_chunk_lst):
 
 
 
-def get_poa(cell, zmw, ccs_file, subread_file, qsub, mlen, poa_file, poa_subset_file, pdf_state):
+def get_poa(cell, zmw, ccs_file, subread_file, qsub_lst, mlen, poa_file, pdf_state):
 
     if shutil.which("abpoa") is None:
         sys.exit("abPOA is not installed on your system")
 
     # load
     get_subread_poa(subread_file)
-    _, qpos, alt, ref = qsub_split(qsub)
+    qsub_lst = qsub_lst.split(",")
     ccs_seq, ccs_seq_bq = load_fq(ccs_file)
     subread_index_lst, subread_seq_lst = load_fa(subread_file)
     ccs_subread_poa_file = get_ccs_subread_poa(cell, zmw, ccs_seq, subread_seq_lst)
@@ -167,61 +167,70 @@ def get_poa(cell, zmw, ccs_file, subread_file, qsub, mlen, poa_file, poa_subset_
     msa_pos2ccs_pos = get_msa_pos2ccs_pos(ccs_msa)
 
     # main
+    counter = 0 
     poa = open(poa_file, "w")
-    poa_subset = open(poa_subset_file, "w")
-    for x, ccs_msa_bq_chunk in enumerate(ccs_msa_bq_chunk_lst):
-        if ccs_msa_bq_chunk.count("!") == len(ccs_msa_bq_chunk):
-            continue
-        for y, ccs_msa_bq in enumerate(ccs_msa_bq_chunk):
-            if ccs_msa_bq != "!": 
-                break
-        ccs_msa_start = (x * mlen) + y
-
-        if x != chunk_len:
-            ccs_msa_bq_chunk_reverse = ccs_msa_bq_chunk[::-1]
-            for z, ccs_msa_bq in enumerate(ccs_msa_bq_chunk_reverse):
+    poa_dir = "/".join(poa_file.split("/")[:-1])
+    for qsub in qsub_lst:
+        _, qpos, alt, ref = qsub_split(qsub)
+        poa_subset_file = os.path.join(poa_dir, "{}_{}_{}_{}.poa".format(zmw, qpos, ref, alt))
+        poa_subset = open(poa_subset_file, "w")
+        for x, ccs_msa_bq_chunk in enumerate(ccs_msa_bq_chunk_lst):
+            if ccs_msa_bq_chunk.count("!") == len(ccs_msa_bq_chunk):
+                continue
+            for y, ccs_msa_bq in enumerate(ccs_msa_bq_chunk):
                 if ccs_msa_bq != "!": 
                     break
-            ccs_msa_end = ((x * mlen) + mlen - 1) - z
-        else:
-            ccs_msa_bq_chunk_reverse = ccs_msa_bq_chunk[::-1]
-            for z, ccs_msa_bq in enumerate(ccs_msa_bq_chunk_reverse):
-                if ccs_msa_bq != "!": 
-                    break
-            ccs_msa_end = ((x * mlen) + len(ccs_msa_bq_chunk_reverse) - 1) - z
-        ccs_base_start = msa_pos2ccs_pos[ccs_msa_start]
-        ccs_base_end = msa_pos2ccs_pos[ccs_msa_end]
+            ccs_msa_start = (x * mlen) + y
 
-        if qpos >= ccs_base_start and qpos <= ccs_base_end:
-            ccs_msa_base_pos = (x * mlen)
-            ccs_msa_chunk = ccs_msa_chunk_lst[x]
-            for p, ccs_msa_base in enumerate(ccs_msa_chunk):
-                if not ccs_msa_base == "-":
-                    ccs_base_pos =  msa_pos2ccs_pos[ccs_msa_base_pos]
-                    if ccs_base_pos == qpos:
-                        qsub_watermark_index = p
+            if x != chunk_len:
+                ccs_msa_bq_chunk_reverse = ccs_msa_bq_chunk[::-1]
+                for z, ccs_msa_bq in enumerate(ccs_msa_bq_chunk_reverse):
+                    if ccs_msa_bq != "!": 
                         break
-                ccs_msa_base_pos += 1
-            qsub_watermark = list(" " * mlen)
-            qsub_watermark[qsub_watermark_index-1:qsub_watermark_index+2] = ["<","*",">"]
-            qsub_watermark = "".join(qsub_watermark)
+                ccs_msa_end = ((x * mlen) + mlen - 1) - z
+            else:
+                ccs_msa_bq_chunk_reverse = ccs_msa_bq_chunk[::-1]
+                for z, ccs_msa_bq in enumerate(ccs_msa_bq_chunk_reverse):
+                    if ccs_msa_bq != "!": 
+                        break
+                ccs_msa_end = ((x * mlen) + len(ccs_msa_bq_chunk_reverse) - 1) - z
+            ccs_base_start = msa_pos2ccs_pos[ccs_msa_start]
+            ccs_base_end = msa_pos2ccs_pos[ccs_msa_end]
 
-            msa_chunk_lst = []
-            msa_chunk_lst.append("{:<15s}\t{}".format("qsub:{}_{}/{}".format(qpos, alt, ref), qsub_watermark))
-            msa_chunk_lst.append("{:<15s}\t{}".format("bq:", ccs_msa_bq_chunk)) 
-            msa_chunk_lst.append("{:<15s}\t{}".format("ccs:{}-{}".format(ccs_base_start, ccs_base_end), ccs_msa_chunk_lst[x]))
-            for q, subread_chunk_lst in enumerate(subread_msa_chunk_lst):
-                msa_chunk_lst.append("{:<15s}\t{}".format("subread:{}".format(subread_index_lst[q]), subread_chunk_lst[x]))
-            poa.write("{}\n".format("\n".join(msa_chunk_lst + [""])))
-            poa_subset.write("{}".format("\n".join(msa_chunk_lst + [""])))
-            poa_subset.close()
-            if pdf_state:
-                get_subset_poa_pdf(cell, qsub, x, ccs_msa_chunk_lst, subread_msa_chunk_lst)
-        else:
-            msa_chunk_lst = []
-            msa_chunk_lst.append("{:<15s}\t{}".format("bq:", ccs_msa_bq_chunk)) 
-            msa_chunk_lst.append("{:<15s}\t{}".format("ccs:{}-{}".format(ccs_base_start, ccs_base_end), ccs_msa_chunk_lst[x]))
-            for q, subread_chunk_lst in enumerate(subread_msa_chunk_lst):
-                msa_chunk_lst.append("{:<15s}\t{}".format("subread:{}".format(subread_index_lst[q]), subread_chunk_lst[x]))
-            poa.write("{}\n".format("\n".join(msa_chunk_lst + [""])))
+            if qpos >= ccs_base_start and qpos <= ccs_base_end:
+                ccs_msa_base_pos = (x * mlen)
+                ccs_msa_chunk = ccs_msa_chunk_lst[x]
+                for p, ccs_msa_base in enumerate(ccs_msa_chunk):
+                    if not ccs_msa_base == "-":
+                        ccs_base_pos =  msa_pos2ccs_pos[ccs_msa_base_pos]
+                        if ccs_base_pos == qpos:
+                            qsub_watermark_index = p
+                            break
+                    ccs_msa_base_pos += 1
+                qsub_watermark = list(" " * mlen)
+                qsub_watermark[qsub_watermark_index-1:qsub_watermark_index+2] = ["<","*",">"]
+                qsub_watermark = "".join(qsub_watermark)
+
+                msa_chunk_lst = []
+                msa_chunk_lst.append("{:<15s}\t{}".format("qsub:{}_{}/{}".format(qpos, alt, ref), qsub_watermark))
+                msa_chunk_lst.append("{:<15s}\t{}".format("bq:", ccs_msa_bq_chunk)) 
+                msa_chunk_lst.append("{:<15s}\t{}".format("ccs:{}-{}".format(ccs_base_start, ccs_base_end), ccs_msa_chunk_lst[x]))
+                for q, subread_chunk_lst in enumerate(subread_msa_chunk_lst):
+                    msa_chunk_lst.append("{:<15s}\t{}".format("subread:{}".format(subread_index_lst[q]), subread_chunk_lst[x]))
+                poa_subset.write("{}".format("\n".join(msa_chunk_lst + [""])))
+                poa_subset.close()
+                if counter == 0:
+                    poa.write("{}\n".format("\n".join(msa_chunk_lst + [""])))
+                if pdf_state:
+                    get_subset_poa_pdf(cell, qsub, x, ccs_msa_chunk_lst, subread_msa_chunk_lst)
+            else:
+                msa_chunk_lst = []
+                msa_chunk_lst.append("{:<15s}\t{}".format("bq:", ccs_msa_bq_chunk)) 
+                msa_chunk_lst.append("{:<15s}\t{}".format("ccs:{}-{}".format(ccs_base_start, ccs_base_end), ccs_msa_chunk_lst[x]))
+                for q, subread_chunk_lst in enumerate(subread_msa_chunk_lst):
+                    msa_chunk_lst.append("{:<15s}\t{}".format("subread:{}".format(subread_index_lst[q]), subread_chunk_lst[x]))
+                if counter == 0:
+                    poa.write("{}\n".format("\n".join(msa_chunk_lst + [""])))
+        counter += 1
+        poa.close()
 

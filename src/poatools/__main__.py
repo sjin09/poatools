@@ -24,7 +24,6 @@ def main():
             options.qsub, # target contigs/scaffolds/chromosomes fofn
             options.length,
             options.poa, # partial order alignment
-            options.poa_subset, # subset of parital order alignment
             options.pdf, # bool: return pdf of the partial order alignment
         )
     elif options.sub == "filter":

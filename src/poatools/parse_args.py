@@ -45,7 +45,7 @@ def parse_args(program_version, arguments=sys.argv[1:]):
         "--qsub",
         type=str,
         required=True,
-        help="query substitution (ZMW:POS_ALT/REF)"
+        help="query substitution (ZMW:POS_ALT/REF) or query substitution list separated by comma"
     )
     parser_poa.add_argument(
         "--length",
@@ -65,12 +65,6 @@ def parse_args(program_version, arguments=sys.argv[1:]):
         required=False,
         action="store_true",
         help="return partial order alignment as a PDF file (default = False)",
-    )
-    parser_poa.add_argument(
-        "--poa_subset",
-        type=str,
-        required=True,
-        help="file to return subset of the annotated partial order alignment with the qsub",
     )
     parser_poa.add_argument(
         "-v",
