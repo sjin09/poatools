@@ -3,6 +3,10 @@ import os
 import sys
 from typing import List, Dict, Tuple
 
+def qsub_split(qsub):
+    zmw, qpos, alt, ref = re.split(":|_|/", qsub)
+    qpos = int(qpos) - 1
+    return zmw, qpos, alt, ref
 
 dna = list("ATGC-")
 def poa_filter(infile, outfile):
@@ -11,7 +15,8 @@ def poa_filter(infile, outfile):
     o = open(outfile, "w")
     for line in open(infile):
         tname, tpos, ref, alt, _, cell, zmw, qsub = line.split()
-        poa_file = "{}/poa/{}.subset.poa".format(cell, zmw)
+        zmw, qpos, alt, ref = qsub_split(qsub)
+        poa_file = "./{}/poa/{}_{}_{}_{}.pdf".format(cell, zmw, qpos, alt, ref)
         if not os.path.exists(poa_file):
             print("{}\t{}\t{} partial order alignment file does not exist".format(cell, zmw, poa_file))
             continue
