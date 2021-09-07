@@ -23,7 +23,7 @@ def poa_filter(infile, outfile):
 
         subread_count = 0
         base_count = {base: 0 for base in dna}
-        for idx, line in enumerate(open(poa_file).readlines()):
+        for idx, line in enumerate(open(poa_file)).readlines():
             if idx == 0: # qsub
                 arr = line.split("\t")
                 jdx = arr[1].index("*")
