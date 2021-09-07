@@ -16,7 +16,7 @@ def poa_filter(infile, outfile):
     for line in open(infile):
         tname, tpos, ref, alt, _, cell, zmw, qsub = line.split()
         zmw, qpos, alt, ref = qsub_split(qsub)
-        poa_file = "./{}/poa/{}_{}_{}_{}.poa".format(cell, zmw, qpos, alt, ref)
+        poa_file = "./{}/poa/{}_{}_{}_{}.poa".format(cell, zmw, qpos, ref, alt)
         if not os.path.exists(poa_file):
             print("{}\t{}\t{} partial order alignment file does not exist".format(cell, zmw, poa_file))
             continue
