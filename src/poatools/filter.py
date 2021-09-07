@@ -16,14 +16,14 @@ def poa_filter(infile, outfile):
     for line in open(infile):
         tname, tpos, ref, alt, _, cell, zmw, qsub = line.split()
         zmw, qpos, alt, ref = qsub_split(qsub)
-        poa_file = "./{}/poa/{}_{}_{}_{}.pdf".format(cell, zmw, qpos, alt, ref)
+        poa_file = "./{}/poa/{}_{}_{}_{}.poa".format(cell, zmw, qpos, alt, ref)
         if not os.path.exists(poa_file):
             print("{}\t{}\t{} partial order alignment file does not exist".format(cell, zmw, poa_file))
             continue
 
         subread_count = 0
         base_count = {base: 0 for base in dna}
-        for idx, line in enumerate(open(poa_file)).readlines():
+        for idx, line in enumerate(open(poa_file).readlines()):
             if idx == 0: # qsub
                 arr = line.split("\t")
                 jdx = arr[1].index("*")
