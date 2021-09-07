@@ -20,7 +20,7 @@ def load_fa(
         seq_lst = []
         index_lst = []
         filtered_seq_lst = []
-        fa = pyfastx.Fasta(fa_file)
+        fa = pyfastx.Fasta(fa_file, build_index=True)
         for seq in fa:
             seq_lst.append(str(seq))
         seq_len_lst = [len(seq) for seq in seq_lst]
@@ -141,7 +141,6 @@ def get_subset_poa_pdf(cell, qsub, x, ccs_msa_chunk_lst, subread_msa_chunk_lst):
         if len(subread_subset) != 0:
             fa.write(">{}/subread/{}\n{}\n".format(zmw, q, subread_subset))
     fa.close()
-
     os.system("abpoa -g {} -r3 {} > /dev/null".format(subset_pdf_file, subset_fasta_file))
     os.system("rm {}.dot".format(subset_pdf_file)) 
     os.system("rm {}".format(subset_fasta_file))
