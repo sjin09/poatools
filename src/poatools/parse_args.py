@@ -12,10 +12,62 @@ def parse_args(program_version, arguments=sys.argv[1:]):
     )
     # subcommand
     subparsers = parser.add_subparsers(dest="sub")
+    # subcommands: whitelist
+    parser_whitelist = subparsers.add_parser(
+        "whitelist",
+        help="return whitelist ZMWs",
+    )
+    parser_whitelist.add_argument(
+        "--bam",
+        type=str,
+        required=True,
+        help="BAM file to read",
+    )
+    parser_whitelist.add_argument(
+        "--vcf",
+        type=str,
+        required=True,
+        help="himut or deepvarinat VCF file to read",
+    )
+    parser_whitelist.add_argument(
+        "--min_bq",
+        type=int,
+        default=93,
+        required=False,
+        help="minimum base quality score (default = 93)",
+    )
+    parser_whitelist.add_argument(
+        "--min_mapq",
+        type=int,
+        default=60,
+        required=False,
+        help="minimum mapping quality score (default = 60)",
+    )
+    parser_whitelist.add_argument(
+        "--min_hq_base_fraction",
+        type=float,
+        default=0.5,
+        required=False,
+        help="minimum high quality base (BQ=93) proportion (default = 0.5)",
+    )
+    parser_whitelist.add_argument(
+        "--min_sequence_identity",
+        type=float,
+        default=0.99,
+        required=False,
+        help="minimum sequence identity threshold (default = 0.99)",
+    )
+    parser_whitelist.add_argument(
+        "-o",
+        "--whitelist",
+        type=str,
+        required=True,
+        help="file to write",
+    )
     # subcommands: poa
     parser_poa = subparsers.add_parser(
         "poa",
-        help="partial order alignment.",
+        help="partial order alignment",
     )
     parser_poa.add_argument(
         "--cell",

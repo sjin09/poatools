@@ -9,6 +9,7 @@ import sys
 import logging
 import poatools.poa 
 import poatools.filter
+import poatools.whitelist
 from poatools.parse_args import parse_args
 
 def main():
@@ -31,6 +32,17 @@ def main():
         poatools.filter.poa_filter(
             options.input,
             options.output 
+        )
+    elif options.sub == "whitelist":
+        print("poatools is identifying whitelist ZMWs for partial order alignment")
+        poatools.whitelist.get_whitelist(
+            options.bam,
+            options.vcf, 
+            options.min_bq, 
+            options.min_mapq, 
+            options.min_hq_base_fraction, 
+            options.min_sequence_identity, 
+            options.whitelist, 
         )
 
 if __name__ == "__main__":
