@@ -24,6 +24,7 @@ def get_whitelist(
         sub_lst = []
         zmw_lst = []
         cell_lst = []
+        orientation_lst = []
         alt_count = 0
         for j in alignments.fetch(chrom, pos, pos+1):
             read = poatools.cslib.BAM(j)
@@ -52,6 +53,7 @@ def get_whitelist(
                 cell, zmw = read.qname.split("/")[0:2]
                 zmw_lst.append(zmw)
                 cell_lst.append(cell)
+                orientation_lst.append(read.orientation)
                 qseq_bq = "".join([chr(bq + 33) for bq in read.bq_int_lst])
                 if not os.path.exists(cell):
                     os.mkdir(cell)
@@ -66,7 +68,7 @@ def get_whitelist(
                 fq.close()
 
         if alt_count == 1:
-            o.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(chrom, pos, ref, alt, alt_count, ",".join(cell_lst), ",".join(zmw_lst), ",".join(sub_lst)))
+            o.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(chrom, pos, ref, alt, alt_count, ",".join(cell_lst), ",".join(zmw_lst), ",".join(orientation_lst), ",".join(sub_lst)))
 
     for cell in cell2zmw:
         wlist = open("{}.whitelist".format(cell), "w")

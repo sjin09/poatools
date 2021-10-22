@@ -16,6 +16,7 @@ class BAM:
         self.qseq = line.query_sequence
         self.qlen = line.query_length
         self.bq_int_lst = line.query_qualities
+        self.orientation = "-" if line.is_reverse else "+"
         hq_base_count = 0
         for i in self.bq_int_lst:
             if i == 93:
