@@ -153,7 +153,7 @@ def get_poa(cell, zmw, ccs_file, subread_file, qsub_lst, mlen, poa_file, pdf_sta
         sys.exit("abPOA is not installed on your system")
 
     # load
-    get_subread_poa(subread_file)
+    # get_subread_poa(subread_file) # subread poa
     qsub_lst = qsub_lst.split(",")
     ccs_seq, ccs_seq_bq = load_fq(ccs_file)
     subread_index_lst, subread_seq_lst = load_fa(subread_file)
