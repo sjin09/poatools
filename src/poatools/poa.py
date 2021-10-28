@@ -81,7 +81,7 @@ def get_ccs_subread_poa(cell, zmw, ccs_seq, subread_seq_lst):
     o.close()
 
     os.system("abpoa {} -r 1 -s > {}".format(ccs_subread_fasta_file, ccs_subread_poa_file))
-    os.system("rm {}".format(ccs_subread_fasta_file))
+    # os.system("rm {}".format(ccs_subread_fasta_file))
     return ccs_subread_poa_file
 
 
@@ -98,7 +98,7 @@ def load_msa(msa_file, ccs_seq_bq):
         else:
             count += 1
             subread_msa_lst.append(line.strip())
-    os.system("rm {}".format(msa_file))
+    # os.system("rm {}".format(msa_file))
 
     if ccs_msa is None:
         sys.exit("partial order alignment failed")
