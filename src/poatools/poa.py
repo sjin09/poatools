@@ -87,6 +87,7 @@ def get_ccs_subread_poa(cell, zmw, ccs_seq, subread_seq_lst):
 
 def load_msa(msa_file, ccs_seq_bq):
     count = 0
+    ccs_msa = None
     subread_msa_lst = []
     for line in open(msa_file).readlines():
         if line.startswith(">"): 
@@ -98,6 +99,9 @@ def load_msa(msa_file, ccs_seq_bq):
             count += 1
             subread_msa_lst.append(line.strip())
     os.system("rm {}".format(msa_file))
+
+    if ccs_msa is None:
+        sys.exit("partial order alignment failed")
 
     index = 0
     ccs_msa_bq_lst = []
