@@ -30,7 +30,7 @@ pytest = "^6.1.2"
 coverage = {extras = ["toml"], version = "^5.3"}
 safety = "^1.9.0"
 mypy = "^0.790"
-typeguard = "^2.9.1"
+typeguard = "^2.13.3"
 xdoctest = {extras = ["colors"], version = "^0.15.0"}
 sphinx = "^3.3.1"
 sphinx-autobuild = "^2020.9.1"
